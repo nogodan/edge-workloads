@@ -1,28 +1,39 @@
+# Purpose: ran-kpi-exporter workload. Restored after an unrelated AI proposal
+#          (INC0010051, fabricated content) was mistakenly approved and merged,
+#          overwriting this file with an "orders-api" manifest. This is the
+#          real, working ran-kpi-exporter Deployment: NMS_ENDPOINT set, image
+#          tag corrected back from the deliberately-injected "alpine:3.2o" typo.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: orders-api
+  name: ran-kpi-exporter
+  namespace: ran-edge
   labels:
-    app: orders-api
+    app: ran-kpi-exporter
+    app.kubernetes.io/part-of: aiops-edge-demo
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: orders-api
+      app: ran-kpi-exporter
   template:
     metadata:
       labels:
-        app: orders-api
+        app: ran-kpi-exporter
+        site: edge
     spec:
       containers:
-        - name: orders-api
-          image: registry.example.com/orders-api:1.4.2
-          ports:
-            - containerPort: 8080
-          resources:
-            requests:
-              cpu: 250m
-              memory: 256Mi
-            limits:
-              cpu: 500m
-              memory: 512Mi
+        - name: ran-kpi-exporter
+          image: alpine:3.20
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              if [ -z "$NMS_ENDPOINT" ]; then
+                echo "FATAL: NMS_ENDPOINT is not set; refusing to start" >&2
+                exit 1
+              fi
+              echo "ran-kpi-exporter healthy; NMS at $NMS_ENDPOINT"
+              exec sleep infinity
+          env:
+            - name: NMS_ENDPOINT
+              value: "http://nms.ran-edge.svc.cluster.local:8080"
