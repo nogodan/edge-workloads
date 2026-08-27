@@ -1,10 +1,16 @@
---- a/workloads/ran-kpi-exporter.yaml
-+++ b/workloads/ran-kpi-exporter.yaml
-@@ -X,Y +X,Y @@
-       containers:
-       - name: ran-kpi-exporter
-         image: alpine:3.20
--        env: []
+--- a/manifests/ran-kpi-exporter.yaml
++++ b/manifests/ran-kpi-exporter.yaml
+@@ -7,6 +7,9 @@
+       image: alpine:3.20
+       command:
+-        - /bin/sh
+-        - -c
++        - sh
+         args:
+-          - 'if [ -z "$NMS_ENDPOINT" ]; then echo "FATAL: NMS_ENDPOINT is not set; refusing to start" >&2; exit 1; fi; echo "ran-kpi-exporter healthy; NMS at $NMS_ENDPOINT"; exec sleep infinity'
++          - 'if [ -z "$NMS_ENDPOINT" ]; then echo "FATAL: NMS_ENDPOINT is not set; refusing to start" >&2; exit 1; fi; echo "ran-kpi-exporter healthy; NMS at $NMS_ENDPOINT"; exec sleep infinity'
 +        env:
 +        - name: NMS_ENDPOINT
-+          value: "<restore original value>"
++          valueFrom:
++            fieldRef:
++              fieldPath: metadata.annotations['config-version']
