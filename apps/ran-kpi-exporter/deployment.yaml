@@ -1,9 +1,7 @@
 # Purpose: ran-kpi-exporter workload. DELIBERATELY BROKEN for demo testing:
 #          image tag typo'd to alpine:3.2o (letter O instead of zero) so the
-#          container can never be pulled -> ImagePullBackOff. This is a real
-#          GitOps-sourced fault (bad commit), not a manual live-cluster patch -
-#          Fleet will roll this out for real and Alertmanager should fire
-#          naturally once the pod goes ImagePullBackOff.
+#          container can never be pulled -> ImagePullBackOff. Real GitOps-
+#          sourced fault (bad commit) - Fleet rolls it out for real.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -25,7 +23,7 @@ spec:
     spec:
       containers:
         - name: ran-kpi-exporter
-          image: alpine:3.20
+          image: alpine:3.2o
           command: ["/bin/sh", "-c"]
           args:
             - |
