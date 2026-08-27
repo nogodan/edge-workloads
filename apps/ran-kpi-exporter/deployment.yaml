@@ -1,33 +1,10 @@
-# Purpose: SEED FAULT baseline. Deliberately omits NMS_ENDPOINT so the
-#          container exits on boot -> CrashLoopBackOff -> RanKpiExporterCrashLooping fires.
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: ran-kpi-exporter
-  namespace: ran-edge
-  labels:
-    app: ran-kpi-exporter
-    app.kubernetes.io/part-of: aiops-edge-demo
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: ran-kpi-exporter
-  template:
-    metadata:
-      labels:
-        app: ran-kpi-exporter
-        site: edge
-    spec:
-      containers:
-        - name: ran-kpi-exporter
-          image: alpine:3.20
-          command: ["/bin/sh", "-c"]
-          args:
-            - |
-              if [ -z "$NMS_ENDPOINT" ]; then
-                echo "FATAL: NMS_ENDPOINT is not set; refusing to start" >&2
-                exit 1
-              fi
-              echo "ran-kpi-exporter healthy; NMS at $NMS_ENDPOINT"
-              exec sleep infinity
+--- a/workloads/ran-kpi-exporter.yaml
++++ b/workloads/ran-kpi-exporter.yaml
+@@ -X,Y +X,Y @@
+       containers:
+       - name: ran-kpi-exporter
+         image: alpine:3.20
+-        env: []
++        env:
++        - name: NMS_ENDPOINT
++          value: "<restore original value>"
