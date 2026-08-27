@@ -1,37 +1,28 @@
-# Purpose: ran-kpi-exporter workload. Fixed by AIOps automation (INC0010036 lineage):
-#          NMS_ENDPOINT is now set so the container starts cleanly instead of
-#          exiting with "FATAL: NMS_ENDPOINT is not set".
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ran-kpi-exporter
-  namespace: ran-edge
+  name: orders-api
   labels:
-    app: ran-kpi-exporter
-    app.kubernetes.io/part-of: aiops-edge-demo
+    app: orders-api
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
-      app: ran-kpi-exporter
+      app: orders-api
   template:
     metadata:
       labels:
-        app: ran-kpi-exporter
-        site: edge
+        app: orders-api
     spec:
       containers:
-        - name: ran-kpi-exporter
-          image: alpine:3.20
-          command: ["/bin/sh", "-c"]
-          args:
-            - |
-              if [ -z "$NMS_ENDPOINT" ]; then
-                echo "FATAL: NMS_ENDPOINT is not set; refusing to start" >&2
-                exit 1
-              fi
-              echo "ran-kpi-exporter healthy; NMS at $NMS_ENDPOINT"
-              exec sleep infinity
-          env:
-            - name: NMS_ENDPOINT
-              value: "http://nms.ran-edge.svc.cluster.local:8080"
+        - name: orders-api
+          image: registry.example.com/orders-api:1.4.2
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              cpu: 250m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
