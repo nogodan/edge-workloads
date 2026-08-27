@@ -1,8 +1,9 @@
-# Purpose: ran-kpi-exporter workload. Restored after an unrelated AI proposal
-#          (INC0010051, fabricated content) was mistakenly approved and merged,
-#          overwriting this file with an "orders-api" manifest. This is the
-#          real, working ran-kpi-exporter Deployment: NMS_ENDPOINT set, image
-#          tag corrected back from the deliberately-injected "alpine:3.2o" typo.
+# Purpose: ran-kpi-exporter workload. DELIBERATELY BROKEN for demo testing:
+#          image tag typo'd to alpine:3.2o (letter O instead of zero) so the
+#          container can never be pulled -> ImagePullBackOff. This matches the
+#          fault already present on the live cluster (kubectl set image), so
+#          this commit makes git and the live drifted state consistent again -
+#          the AI remediation flow should find and fix this via find/replace.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -24,7 +25,7 @@ spec:
     spec:
       containers:
         - name: ran-kpi-exporter
-          image: alpine:3.20
+          image: alpine:3.2o
           command: ["/bin/sh", "-c"]
           args:
             - |
