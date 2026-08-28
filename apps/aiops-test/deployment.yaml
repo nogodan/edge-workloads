@@ -1,0 +1,36 @@
+# Purpose: aiops-test workload (renamed from ran-kpi-exporter 2026-08-28).
+#          Healthy baseline for the AIOps demo's GitOps pipeline.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aiops-test
+  namespace: ran-edge
+  labels:
+    app: aiops-test
+    app.kubernetes.io/part-of: aiops-edge-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aiops-test
+  template:
+    metadata:
+      labels:
+        app: aiops-test
+        site: edge
+    spec:
+      containers:
+        - name: aiops-test
+          image: alpine:3.20
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              if [ -z "$NMS_ENDPOINT" ]; then
+                echo "FATAL: NMS_ENDPOINT is not set; refusing to start" >&2
+                exit 1
+              fi
+              echo "aiops-test healthy; NMS at $NMS_ENDPOINT"
+              exec sleep infinity
+          env:
+            - name: NMS_ENDPOINT
+              value: "http://nms.ran-edge.svc.cluster.local:8080"
